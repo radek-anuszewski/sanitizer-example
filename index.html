@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+		<meta charset="UTF-8">
+		<title>HTML Sanitizer Demo</title>
+  <style>
+    body {
+      padding: 40px;
+      width: 360px;
+    }
+
+    textarea,
+    fieldset {
+      width: 100%;
+      padding: 5px;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    fieldset {
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
+  <script type="module">
+    const text = document.querySelector('#text');
+    const dom = document.querySelector('#dom');
+    const button = document.querySelector('#sanitize');
+    const allowAll = document.querySelector('#allowAll');
+
+    const onSanitize = () => {
+      const checkedSelector = 'input[name="allowed"]:checked';
+      const checkedCheckboxes = [
+        ...document.querySelectorAll(checkedSelector),
+      ].map(el => el.value);
+      const allowElements = allowAll.checked ?
+        undefined
+        : checkedCheckboxes;
+
+      const sanitizer = new Sanitizer({
+        allowElements,
+      });
+
+      dom.setHTML(
+        text.value,
+        {
+          sanitizer,
+        }
+      );
+    };
+
+    button.addEventListener('click', onSanitize);
+  </script>
+</head>
+<body>
+<main>
+  <h1>Sanitizer demo</h1>
+  <article>
+    <h2>Sanitize text before inserting it to DOM</h2>
+    <p>
+      <label for="text">Text to insert</label>
+      <br>
+      <textarea id="text">
+Test <b>bold</b> <i>italic</i> <s>stroke</s>
+<img src="dummyimage.png"><script>alert('Test')</script>
+<u>underscore</u>
+      </textarea>
+    </p>
+    <p>
+      <fieldset>
+        <legend>
+          Which tags do you want to allow?
+        </legend>
+        <label>
+          Allow all (will remove script tag only)
+          <input type="checkbox" name="allowAll" id="allowAll">
+        </label>
+        <label>
+          img
+          <input type="checkbox" name="allowed" value="img">
+        </label>
+        <label>
+          i
+          <input type="checkbox" name="allowed" value="i">
+        </label>
+        <label>
+          b
+          <input type="checkbox" name="allowed" value="b">
+        </label>
+        <label>
+          a
+          <input type="checkbox" name="allowed" value="a">
+        </label>
+        <label>
+          u
+          <input type="checkbox" name="allowed" value="u">
+        </label>
+        <label>
+          ul
+          <input type="checkbox" name="allowed" value="ul">
+        </label>
+        <label>
+          li
+          <input type="checkbox" name="allowed" value="li">
+        </label>
+      </fieldset>
+    </p>
+    <p>
+      <button id="sanitize">Sanitize</button>
+    </p>
+    Result:
+    <p id="dom"></p>
+  </article>
+</main>
+</body>
+</html>
